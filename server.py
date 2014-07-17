@@ -10,15 +10,17 @@ from threading import Thread
 from flask import Flask, render_template
 from flask.ext.socketio import SocketIO, emit
 
+
 app = Flask(__name__)
 app.debug = True
-app.config['SECRET_KEY'] = 'aA9CqNkMdvSC7PT'
+app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 thread = None
 users = 0
 wrs = [
-    piko.Device('192.168.0.29'),
-    piko.Device('192.168.0.39')
+    piko.Device('192.168.178.25', 81, 1),
+    piko.Device('192.168.178.24', 81, 2),
+    piko.Device('192.168.178.26', 81, 3),
 ]
 
 
