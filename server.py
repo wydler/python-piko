@@ -72,5 +72,9 @@ def disconnect():
     print 'Client disconnected'
 
 
-if __name__ == '__main__':
+def run():
     socketio.run(app)
+
+
+if __name__ == '__main__':
+    run()
