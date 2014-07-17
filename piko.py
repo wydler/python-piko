@@ -9,8 +9,6 @@ __license__ = 'GPL v2'
 import socket
 import struct
 import hexdump
-import sys
-import traceback
 
 
 DEBUG = False
@@ -24,7 +22,7 @@ class Packet(object):
     __is_packed = False
     __is_unpacked = False
 
-    def __init__(self, code, address=255, pack=True):
+    def __init__(self, code, address, pack=True):
         self.request = '\x62%s\x03%s\x00%s' % (chr(address), chr(address), chr(code))
         if pack:
             self.pack()
@@ -123,11 +121,12 @@ class Device(object):
         self._total()
 
     def accumulate_power(self):
+        """Calculate accumulated power."""
         return self.data['current']['ac_1'][2] + self.data['current']['ac_2'][2] + self.data['current']['ac_2'][2]
 
     def _status(self):
         """Get the current status."""
-        packet = Packet(0x57, 0xff)
+        packet = Packet(0x57, self.addr)
         self.sock.send(packet)
         packet.unpack('<xxxxxBBHxxxxBx')
         self.data['status'] = {
@@ -140,31 +139,31 @@ class Device(object):
         """Get the inverter data."""
         # Get inverter model.
         self.data['inverter'] = {}
-        packet = Packet(0x90)
+        packet = Packet(0x90, self.addr)
         self.sock.send(packet)
         packet.unpack('<xxxxx16sBxxxxxxBxxxxBx')
         self.data['inverter']['model'] = packet.response[0].strip('\x00')
         self.data['inverter']['string'] = packet.response[1]
         self.data['inverter']['phase'] = packet.response[2]
         # Get inverter name.
-        packet = Packet(0x44)
+        packet = Packet(0x44, self.addr)
         self.sock.send(packet)
         packet.unpack('<xxxxx15sBx')
         self.data['inverter']['name'] = packet.response[0].strip('\x00')
         # Get inverter serial number.
-        packet = Packet(0x50)
+        packet = Packet(0x50, self.addr)
         self.sock.send(packet)
         packet.unpack('<xxxxx13sBx')
         self.data['inverter']['sn'] = packet.response[0]
         # Get item number.
-        packet = Packet(0x51)
+        packet = Packet(0x51, self.addr)
         self.sock.send(packet)
         packet.unpack('<xxxxxIBx')
         self.data['inverter']['ref'] = hex(packet.response[0])
 
     def _current(self):
         """Get current energy."""
-        packet = Packet(0x43)
+        packet = Packet(0x43, self.addr)
         self.sock.send(packet)
         packet.unpack('<xxxxxHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBBBBBx')
         self.data['current'] = {}
@@ -179,28 +178,18 @@ class Device(object):
 
     def _daily(self):
         """Get daily energy."""
-        packet = Packet(0x9d)
+        packet = Packet(0x9d, self.addr)
         self.sock.send(packet)
         packet.unpack('<xxxxxIBx')
         self.data['daily'] = packet.response[0]
 
     def _total(self):
         """Get total energy."""
-        packet = Packet(0x45)
+        packet = Packet(0x45, self.addr)
         self.sock.send(packet)
         packet.unpack('<xxxxxIBx')
         self.data['total'] = packet.response[0]
 
 
 if __name__ == "__main__":
-    try:
-        wr1 = Device('192.168.0.29')
-        wr1.connect()
-        wr1.update()
-        print wr1.data
-        wr1.disconnect()
-    except:
-        print "Exception in user code:"
-        print '-' * 60
-        traceback.print_exc(file=sys.stdout)
-        print '-' * 60
+    pass
