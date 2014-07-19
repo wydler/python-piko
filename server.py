@@ -6,6 +6,8 @@ monkey.patch_all()
 
 import time
 import piko
+import traceback
+import socket
 from threading import Thread
 from flask import Flask, render_template
 from flask.ext.socketio import SocketIO, emit
@@ -29,31 +31,32 @@ def background_thread():
     while True:
         if users != 0:
             data = {
-                'current': -1,
-                'daily': -1,
-                'total': -1
+                'current': 0,
+                'daily': 0,
+                'total': 0
             }
             for wri in wrs:
-                wri.update()
-                data['current'] += wri.accumulate_power()
-                data['daily'] += wri.data['daily']
-                data['total'] += wri.data['total']
+                print "next"
+                try:
+                    wri.update()
+                    data['current'] += wri.accumulate_power()
+                    data['daily'] += wri.data['daily']
+                    data['total'] += wri.data['total']
+                except:
+                    try:
+                        wri.connect()
+                    except socket.error as ex:
+                        print ex
+                    except:
+                        traceback.print_exc()
             socketio.emit('update', {'data': data}, namespace='/piko')
-        time.sleep(2)
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
+        time.sleep(5)
 
 
 @socketio.on('connect', namespace='/piko')
 def connect():
     global users
     users += 1
-    if users == 1:
-        for wri in wrs:
-            wri.connect()
     global thread
     if thread is None:
         print 'start thread'
