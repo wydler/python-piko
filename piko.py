@@ -73,6 +73,7 @@ class Socket(object):
     def connect(self, *p):
         """Connect to device."""
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.settimeout(5)
         self._sock.connect(*p)
 
     def send(self, packet):
@@ -81,6 +82,7 @@ class Socket(object):
             print '#' * 76
             hexdump.hexdump(packet.request)
         self._sock.send(packet.request)
+
         packet.response = self._sock.recv(4096)
         if DEBUG:
             print '-' * 76
