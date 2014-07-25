@@ -124,7 +124,7 @@ class Device(object):
 
     def accumulate_power(self):
         """Calculate accumulated power."""
-        return self.data['current']['ac_1'][2] + self.data['current']['ac_2'][2] + self.data['current']['ac_2'][2]
+        return self.data['current']['ac_1'][2] + self.data['current']['ac_2'][2] + self.data['current']['ac_3'][2]
 
     def _status(self):
         """Get the current status."""
