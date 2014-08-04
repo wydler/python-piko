@@ -34,6 +34,9 @@ class Packet(object):
         self.request += '%s\x00' % (chr(self._generate_checksum()))
         self.__is_packed = True
 
+    def is_packed(self):
+        return self.__is_packed
+
     def unpack(self, pattern):
         """Unpack response packet."""
         if self.__is_unpacked:
@@ -41,6 +44,9 @@ class Packet(object):
         self._verify_checksum()
         self.response = struct.unpack(pattern, self.response)
         self.__is_unpacked = True
+
+    def is_unpacked(self):
+        return self.__is_unpacked
 
     def _generate_checksum(self):
         """Generate checksum for packet."""
