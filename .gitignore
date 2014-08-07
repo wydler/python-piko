@@ -55,3 +55,6 @@ docs/_build/
 # Sublime files
 *.sublime-project
 *.sublime-workspace
+
+# Databases
+*.db

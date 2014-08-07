@@ -5,13 +5,21 @@ import sys
 import traceback
 
 if __name__ == "__main__":
+    devices = (
+        piko.Device('192.168.178.24', 81, 2),
+        piko.Device('192.168.178.25', 81, 1),
+        piko.Device('192.168.178.26', 81, 3)
+    )
+
     try:
-        piko.DEBUG = True
-        wr1 = piko.Device('192.168.178.24', 81, 2)
-        wr1.connect()
-        wr1.update()
-        print wr1.data
-        wr1.disconnect()
+        piko.DEBUG = False
+        total = 0
+        for device in devices:
+            device.connect()
+            device.update()
+            total += device.data['total']
+            device.disconnect()
+        print total
     except:
         print "Exception in user code:"
         print '-' * 60
