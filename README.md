@@ -5,7 +5,7 @@ Python library to connect to KOSTAL PIKO inverters and web monitor.
 
 ### Monitor
 
-    ![ScreenShot](docs/screenshot-1.png)
+![ScreenShot](docs/screenshot-1.png)
 
 ### Usage
 
