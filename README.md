@@ -3,10 +3,6 @@ python-piko
 
 Python library to connect to KOSTAL PIKO inverters and web monitor.
 
-### Monitor
-
-![ScreenShot](docs/screenshot-1.png)
-
 ### Usage
 
     import piko
@@ -23,3 +19,9 @@ Python library to connect to KOSTAL PIKO inverters and web monitor.
 
     # Disconnect from inverter.
     inverter.disconnect()
+
+### Monitor (in progress)
+
+![ScreenShot](docs/screenshot-1.png)
+![ScreenShot](docs/screenshot-2.png)
+![ScreenShot](docs/screenshot-3.png)
