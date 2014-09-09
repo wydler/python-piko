@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+$(document).ready(function(){
+    var data = {
+        labels: [],
+        datasets: [
+            {
+                label: "Current",
+                fillColor: "rgba(10,134,229,0.5)",
+                strokeColor: "rgba(10,134,229,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(151,187,205,1)",
+                data: []
+            }
+        ]
+    };
+    var options = {
+        animation: false,
+        bezierCurve : true,
+        pointDot: false,
+        scaleFontSize: 16,
+        scaleOverride: true,
+        scaleStartValue: 0,
+        scaleStepWidth: 1000,
+        scaleSteps: 10,
+        showTooltips: false,
+    };
+    var ctx = $("#myChart").get(0).getContext("2d");
+    ctx.canvas.width = $('.content').width();
+    ctx.canvas.height = $('.content').height();
+    var myNewChart;// = new Chart(ctx).Line(data);
+
+    namespace = '/piko'; // change to an empty string to use the global namespace
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+
+    //console.log($('#range > span').text());
+    var range = 90;
+    switch ($('#range > span').text()) {
+        case "5 Minutes":
+            range = 30;
+            //console.log(30);
+            break;
+        case "15 Minutes":
+            range = 90;
+            //console.log(90);
+            break;
+        case "30 Minutes":
+            range = 180
+            //console.log(180);
+            break;
+        case "60 Minutes":
+            range = 360;
+            //console.log(360);
+            break;
+    }
+
+    socket.on('init', function(msg) {
+        updateDataset(msg, data, range);
+        myNewChart = new Chart(ctx).Line(data, options);
+        $('.dimmer').fadeOut();
+    });
+    socket.on('update', function(msg) {
+        if (myNewChart) {
+            myNewChart.addData([msg.data.current], '');
+            if (myNewChart.datasets[0].points.length > range) {
+                myNewChart.removeData();
+            }
+        }
+    });
+    $("#range").dropdown({
+        onChange: function (value, text) {
+            alert(value);
+        }
+    });
+});
+function updateDataset(msg, data, range) {
+    for(var i=0; i<range; ++i) {
+        if(msg.data[range-i]) {
+            data.labels.push('');
+            data.datasets[0].data.push(msg.data[range-i].current);
+        } else {
+            data.labels.push('');
+            data.datasets[0].data.push(0);
+        }
+    }
+}
+{% endblock %}
+
+{% block title %}
+    <i class="home icon"></i> Home
+{% endblock %}
+
+{% block menu %}
+<div class="item">
+    <div id="range" class="ui red labeled icon top right pointing dropdown button">
+        <i class="calendar icon"></i>
+        <span class="text">15 Minutes</span>
+        <div class="menu">
+            <a class="item">5 Minutes</a>
+            <a class="active item">15 Minutes</a>
+            <a class="item">30 Minutes</a>
+            <a class="item">1 Hour</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block toolbar_right %}
+<div class="item">
+    <div class="ui teal button">
+        Update
+    </div>
+</div>
+{% endblock %}
+
+{% block body %}
+    <canvas id="myChart"></canvas>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+{% endblock %}
+
+{% block toolbar_left %}
+<div class="item">
+    <div class="ui red button">
+        Cancel
+    </div>
+</div>
+{% endblock %}
+
+{% block toolbar_right %}
+<div class="item">
+    <div class="ui green button">
+        Save
+    </div>
+</div>
+{% endblock %}
+
+{% block title %}
+<i class="settings icon"></i>
+Settings
+{% endblock %}
+
+{% block body %}
+<div class="ui inverted divided list" style="padding:0 20px;">
+  <div class="item">
+    <i class="map marker icon"></i>
+    <div class="content">
+      <a class="header">New York City</a>
+      <div class="description">A lovely city</div>
+    </div>
+  </div>
+  <div class="item">
+    <i class="map marker icon"></i>
+    <div class="content">
+      <a class="header">Chicago</a>
+      <div class="description">A lovely city</div>
+    </div>
+  </div>
+  <div class="item">
+    <i class="map marker icon"></i>
+    <div class="content">
+      <a class="header">Los Angeles</a>
+      <div class="description">A lovely city</div>
+    </div>
+  </div>
+  <div class="item">
+    <i class="map marker icon"></i>
+    <div class="content">
+      <a class="header">San Francisco</a>
+      <div class="description">A lovely city</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

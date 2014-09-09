@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>PIKO Monitor</title>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Unica+One">
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/semantic.min.css">
+    <style>
+        html {
+            background-color: #333;
+            font-family: 'Unica One';
+            text-transform: uppercase;
+            height: 100%;
+            width: 100%;
+        }
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        .container {
+            height: 100%;
+            width: 100%;
+            padding-left: 100px;
+            box-sizing: border-box;
+        }
+        .panel {
+            color: #fff;
+            height: 100%;
+            padding-top: 45px;
+            padding-bottom: 45px;
+            box-sizing: border-box;
+            position: relative;
+        }
+    </style>
+    <script type="text/javascript" src="/vendor/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <script type="text/javascript" src="javascript/semantic.min.js"></script>
+    <script type="text/javascript" src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script type="text/javascript" src="/vendor/highstock-release/themes/dark-unica.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1-beta.2/Chart.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        Date.prototype.addHours= function(h){
+            this.setHours(this.getHours()+h);
+            return this;
+        }
+        $(document).ready(function(){
+            $('.ui.dropdown')
+                .dropdown()
+            ;
+        });
+        {% block javascript %}{% endblock %}
+    </script>
+</head>
+<body class="piko">
+    <div class="ui large teal inverted fixed top menu" style="padding-left:100px;box-sizing: border-box">
+        <div class="title item">
+            {% block title %}{% endblock %}
+        </div>
+        <div class="right menu">
+            {% block menu %}{% endblock %}
+        </div>
+    </div>
+    <div class="ui large inverted fixed bottom menu" style="padding-left:100px;box-sizing: border-box">
+        {% block toolbar_left %}<div class="title item">&nbsp;</div>{% endblock %}
+        <div class="right menu">
+            {% block toolbar_right %}{% endblock %}
+        </div>
+    </div>
+    <div class="ui thin vertical teal inverted labeled icon sidebar menu active" style="width:100px!important;">
+        <a href="{{ url_for('index') }}" class="teal item {% if request.url_rule.endpoint == 'index' %}active{% endif %}">
+            <i class="home icon"></i>
+            Home
+        </a>
+        <a class="teal item {% if request.url_rule.endpoint == 'current' %}active{% endif %}">
+            <i class="lab icon"></i>
+            Current
+        </a>
+        <a href="{{ url_for('history') }}" class="green item {% if request.url_rule.endpoint == 'history' %}active{% endif %}">
+            <i class="star icon"></i>
+            History
+        </a>
+        <a href="{{ url_for('settings') }}" class="green item {% if request.url_rule.endpoint == 'settings' %}active{% endif %}">
+            <i class="settings icon"></i>
+            Settings
+        </a>
+    </div>
+
+    <div class="container">
+
+        <div class="ui panel">
+            <div class="ui dimmer">
+                <div class="ui large loader"></div>
+            </div>
+            {% block body %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>

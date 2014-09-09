@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block javascript %}
+$(document).ready(function(){
+    Highcharts.setOptions({
+        global: {
+            timezoneOffset: -60
+        }
+    });
+
+    function update(data) {
+        var types = {'yield': 'column', 'power': 'areaspline'};
+        var suffixes = {'yield': ' kWh', 'power': ' W'};
+        var decimals = {'yield': 2, 'power': 0};
+        var options = {
+            chart: {
+                renderTo: 'chart',
+            },
+            rangeSelector: {
+                inputEnabled: $('#container').width() > 480,
+                buttons: [{
+                    type: 'day',
+                    count: 1,
+                    text: '1d'
+                }, {
+                    type: 'week',
+                    count: 1,
+                    text: '1w'
+                }, {
+                    type: 'month',
+                    count: 1,
+                    text: '1m'
+                }, {
+                    type: 'month',
+                    count: 6,
+                    text: '6m'
+                }, {
+                    type: 'year',
+                    count: 1,
+                    text: '1y'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }],
+                selected: 0
+            },
+
+            xAxis: {
+                ordinal: false,
+            },
+
+            yAxis: {
+                title: {
+                    text: 'Power'
+                },
+                min: 0,
+            },
+
+            series: [{
+                name: 'Power',
+                data: data.result,
+                type: types[data.type],
+                dataGrouping: {
+                    groupPixelWidth: 30,
+                    units: [[
+                        'minute',
+                        []
+                    ], [
+                    	'hour',
+                    	[1]
+                    ], [
+                    	'day',
+                    	[1]
+                    ], [
+                    	'week',
+                    	[1]
+                    ], [
+                    	'month',
+                    	[1, 3, 6]
+                    ], [
+                    	'year',
+                    	[1, 5]
+                    ]],
+                },
+                fillColor: {
+                    linearGradient: {
+                        x1: 0,
+                        y1: 0,
+                        x2: 0,
+                        y2: 1
+                    },
+                    stops: [
+                        [0, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')],
+                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.2).get('rgba')]
+                    ]
+                },
+                tooltip: {
+                    valueDecimals: decimals[data.type],
+                    valueSuffix: suffixes[data.type],
+                },
+            }],
+        };
+        var chart = new Highcharts.StockChart(options);
+    };
+
+
+    $.post("/_history", {type: 'yield'},function(data) {
+        update(data)
+    });
+
+    $('#update').click(function() {
+        $('#update').addClass("loading");
+        type = $('#type').dropdown('get text').toLowerCase();
+        $.post("/_history_update", {type: type}, function(data) {
+            update(data)
+            $('#update').removeClass("loading");
+        });
+    });
+
+    $("#type").dropdown({
+        onChange: function (value, text) {
+            $.post("/_history", {type: value},function(data) {
+                update(data)
+            });
+        }
+    });
+
+    $('.dimmer').fadeOut();
+});
+{% endblock %}
+
+{% block menu %}
+<div class="item">
+    <div id="type" class="ui black labeled icon top left pointing dropdown button">
+        <i class="tasks icon"></i>
+        <span class="text">Yield</span>
+        <div class="menu">
+            <a class="active item">Yield</a>
+            <a class="item">Power</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block toolbar_left %}
+{% endblock %}
+
+{% block toolbar_right %}
+<div class="item">
+    <div id="update" class="ui teal button">
+        Update
+    </div>
+</div>
+{% endblock %}
+
+{% block title %}
+    <i class="settings icon"></i>
+    History
+{% endblock %}
+
+{% block body %}
+    <div id="chart" style="height: 100%; min-width: 310px"></div>
+{% endblock %}
